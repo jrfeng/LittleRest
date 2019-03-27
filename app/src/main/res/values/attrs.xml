@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ClockView">
+        <!--Clock Panel-->
+        <attr name="panelStrokeColor" format="color" />
+        <attr name="panelStrokeWidth" format="dimension" />
+        <attr name="panelFillColor" format="color" />
+
+        <!--Hour Hand-->
+        <attr name="hourHandColor" format="color" />
+        <attr name="hourHandWidth" format="dimension" />
+
+        <!--Minute Hand-->
+        <attr name="minuteHandColor" format="color" />
+        <attr name="minuteHandWidth" format="dimension" />
+
+        <!--Second Hand-->
+        <attr name="secondHandColor" format="color" />
+        <attr name="secondHandWidth" format="dimension" />
+
+        <!--Countdown Progress Bar-->
+        <attr name="countdownBarColor" format="color" />
+
+        <!--Show Second Hand-->
+        <attr name="showSecondHand" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="RulerView">
+        <!--Scale Line-->
+        <attr name="scaleLineWidth" format="dimension" />
+        <attr name="scaleLineColor" format="color" />
+        <!--<attr name="scaleLineSelectedColor" format="color" />-->
+
+        <!--Indicator-->
+        <attr name="indicatorDrawable" format="reference" />
+    </declare-styleable>
+</resources>
