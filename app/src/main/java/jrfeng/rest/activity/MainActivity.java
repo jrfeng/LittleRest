@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         ValueAnimator animator = createClockViewChangeBoundsAnim(
                 mSceneCountdown_ClockViewWidth,
                 mSceneConfig_ClockViewWidth);
-        animator.setInterpolator(new AccelerateInterpolator());
+        animator.setInterpolator(new DecelerateInterpolator());
         animator.start();
     }
 
