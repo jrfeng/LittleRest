@@ -48,7 +48,7 @@
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_marginBottom="16dp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/btn_bg_round"
         android:contentDescription="@string/des_start"
         android:src="@mipmap/btn_start"
         app:layout_constraintBottom_toBottomOf="parent"
