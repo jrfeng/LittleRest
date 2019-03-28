@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="sceneConfigClockWidth">220dp</dimen>
+    <dimen name="sceneConfigClockHeight">220dp</dimen>
+
+    <dimen name="sceneCountdownClockWidth">260dp</dimen>
+    <dimen name="sceneCountdownClockHeight">260dp</dimen>
+
+    <!-- 为了避免因系统字体大小调整而造成文字大小改变，故使用 dp 代替 sp -->
+    <dimen name="textSize_ConfigTimeLabel">40dp</dimen>
+    <dimen name="textSize_CountdownTimeLabel">20dp</dimen>
+    <dimen name="textSize_TextCountdownView">56dp</dimen>
+</resources>

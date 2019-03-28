@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">LittleRest</string>
     <string name="des_start">Start</string>
+    <string name="des_cancel">Cancel</string>
+
+    <string name="defaultText_Config_TimeLabel">0Min</string>
+    <string name="defaultText_Countdown_TimeLabel">Total 0 Min</string>
 </resources>

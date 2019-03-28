@@ -6,13 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".MainActivity">
+    tools:context=".activity.MainActivity">
 
-    <jrfeng.rest.widget.ClockView
-        android:id="@+id/clockView"
-        android:layout_width="260dp"
-        android:layout_height="260dp"
-        app:countdownBarColor="@android:color/holo_orange_dark"
+    <Space
+        android:id="@+id/space"
+        android:layout_width="@dimen/sceneCountdownClockWidth"
+        android:layout_height="@dimen/sceneCountdownClockHeight"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -24,25 +23,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF"
-        android:textSize="56dp"
-        app:layout_constraintBottom_toTopOf="@id/text2"
+        android:textSize="@dimen/textSize_TextCountdownView"
+        app:layout_constraintBottom_toTopOf="@id/tvTimeLabel"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/clockView"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintTop_toBottomOf="@id/space"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:ignore="SpUsage" />
 
     <TextView
-        android:id="@+id/text2"
+        android:id="@+id/tvTimeLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="共 30 分钟"
+        android:text="@string/defaultText_Countdown_TimeLabel"
         android:textColor="#FFFFFF"
-        android:textSize="20dp"
+        android:textSize="@dimen/textSize_CountdownTimeLabel"
         android:textStyle="normal"
         app:layout_constraintBottom_toTopOf="@id/btnCancel"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textCountdown" />
+        app:layout_constraintTop_toBottomOf="@id/textCountdown"
+        tools:ignore="SpUsage" />
 
     <ImageButton
         android:id="@+id/btnCancel"
@@ -50,13 +51,12 @@
         android:layout_height="72dp"
         android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
-        android:contentDescription="@string/des_start"
-        android:onClick="onClick"
+        android:contentDescription="@string/des_cancel"
         android:src="@mipmap/btn_cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9" />
+        app:layout_constraintVertical_bias="@fraction/buttonVerticalBias" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
