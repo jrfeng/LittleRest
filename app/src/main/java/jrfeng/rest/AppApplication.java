@@ -13,6 +13,8 @@ public class AppApplication extends Application {
     private Typeface mNotoSansThin;
     private SharedPreferences mCountdownPreferences;
 
+    private boolean mCountdownRunning;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -44,5 +46,13 @@ public class AppApplication extends Application {
         return mCountdownPreferences.getInt(
                 AppApplication.KEY_COUNTDOWN_MINUTE,
                 AppApplication.DEFAULT_COUNTDOWN_MINUTE);
+    }
+
+    public boolean isCountdownRunning() {
+        return mCountdownRunning;
+    }
+
+    public void setCountdownRunning(boolean countdownRunning) {
+        mCountdownRunning = countdownRunning;
     }
 }

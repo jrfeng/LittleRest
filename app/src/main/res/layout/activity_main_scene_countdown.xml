@@ -10,47 +10,49 @@
 
     <Space
         android:id="@+id/space"
-        android:layout_width="@dimen/sceneConfigClockWidth"
-        android:layout_height="@dimen/sceneConfigClockHeight"
+        android:layout_width="@dimen/sceneCountdownClockWidth"
+        android:layout_height="@dimen/sceneCountdownClockHeight"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.12" />
 
-    <TextView
-        android:id="@+id/tvTimeLabel"
+    <jrfeng.rest.widget.TextCountdownView
+        android:id="@+id/textCountdown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/defaultText_Config_TimeLabel"
         android:textColor="#FFFFFF"
-        android:textSize="@dimen/textSize_ConfigTimeLabel"
-        android:textStyle="normal"
-        app:layout_constraintBottom_toTopOf="@id/timeSelector"
+        android:textSize="@dimen/textSize_TextCountdownView"
+        app:layout_constraintBottom_toTopOf="@id/tvTimeLabel2"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/space"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:ignore="SpUsage" />
 
-    <jrfeng.rest.widget.RulerView
-        android:id="@+id/timeSelector"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="2.5"
+    <TextView
+        android:id="@+id/tvTimeLabel2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/defaultText_Countdown_TimeLabel"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/textSize_CountdownTimeLabel"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toTopOf="@id/btnAction"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8" />
+        app:layout_constraintTop_toBottomOf="@id/textCountdown"
+        tools:ignore="SpUsage" />
 
     <ImageButton
-        android:id="@+id/btnStart"
+        android:id="@+id/btnAction"
         android:layout_width="72dp"
         android:layout_height="72dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/btn_bg_round"
-        android:contentDescription="@string/des_start"
-        android:src="@mipmap/btn_start"
+        android:contentDescription="@string/des_cancel"
+        android:src="@mipmap/btn_cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

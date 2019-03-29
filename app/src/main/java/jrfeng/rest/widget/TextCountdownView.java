@@ -2,6 +2,8 @@ package jrfeng.rest.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 
 import java.util.Calendar;
@@ -15,6 +17,8 @@ import androidx.appcompat.widget.AppCompatTextView;
 public class TextCountdownView extends AppCompatTextView implements CountdownTimer {
     private int mSeconds;
     private int mMinutes;
+
+    private Handler mHandler;
 
     private boolean mCountdownRunning;
 
@@ -33,8 +37,9 @@ public class TextCountdownView extends AppCompatTextView implements CountdownTim
 
     public TextCountdownView(Context context) {
         super(context);
-        init();
+        mHandler = new Handler(Looper.getMainLooper());
 
+        init();
     }
 
     public TextCountdownView(Context context, AttributeSet attrs) {
@@ -112,7 +117,12 @@ public class TextCountdownView extends AppCompatTextView implements CountdownTim
         mTimer.cancel();
         mCountdownRunning = false;
         if (mListener != null) {
-            mListener.timeout();
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mListener.timeout();
+                }
+            });
         }
     }
 }

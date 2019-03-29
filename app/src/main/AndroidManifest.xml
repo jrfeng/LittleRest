@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="jrfeng.rest">
 
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <application
         android:name=".AppApplication"
         android:allowBackup="true"

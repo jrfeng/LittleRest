@@ -10,6 +10,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -45,6 +47,8 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
     private static final int DEFAULT_MINUTE_HAND_COLOR = DEFAULT_PANEL_STROKE_COLOR;
     private static final int DEFAULT_SECOND_HAND_COLOR = DEFAULT_PANEL_STROKE_COLOR;
     private static final int DEFAULT_COUNTDOWN_BAR_COLOR = Color.WHITE;
+
+    private Handler mHandler;
 
     private Context mContext;
     private boolean mShowing;
@@ -93,6 +97,7 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
     public ClockView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
+        mHandler = new Handler(Looper.getMainLooper());
 
         if (context instanceof LifecycleOwner) {
             LifecycleOwner lifecycleOwner = (LifecycleOwner) context;
@@ -188,7 +193,12 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
 
     private void checkTimeout() {
         if (isTimeout()) {
-            notifyTimeout();
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyTimeout();
+                }
+            });
         }
     }
 
