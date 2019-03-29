@@ -11,4 +11,5 @@
     <color name="colorWhite">#FFFFFF</color>
 
     <color name="timeoutTextColor">@color/colorWhite</color>
+    <color name="countdownBarColor">#FF8800</color>
 </resources>

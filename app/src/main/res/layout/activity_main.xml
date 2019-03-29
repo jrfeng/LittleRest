@@ -19,7 +19,7 @@
         android:id="@+id/clockView"
         android:layout_width="@dimen/sceneConfigClockWidth"
         android:layout_height="@dimen/sceneConfigClockHeight"
-        app:countdownBarColor="@android:color/holo_orange_dark"
+        app:countdownBarColor="@color/countdownBarColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
