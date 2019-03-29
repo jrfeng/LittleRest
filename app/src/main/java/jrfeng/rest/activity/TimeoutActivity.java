@@ -1,8 +1,10 @@
 package jrfeng.rest.activity;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -12,9 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import jrfeng.rest.AppApplication;
 import jrfeng.rest.R;
 
-// TODO
 public class TimeoutActivity extends AppCompatActivity {
     private MediaPlayer mMediaPlayer;
+    private Vibrator mVibrator;
 
     private TextView tvMessage;
     private Button btnOK;
@@ -51,12 +53,27 @@ public class TimeoutActivity extends AppCompatActivity {
         mMediaPlayer = MediaPlayer.create(this, R.raw.default_ring);
         mMediaPlayer.setLooping(true);
         mMediaPlayer.start();
+        startVibrate();
     }
 
     private void stopRing() {
         mMediaPlayer.stop();
         mMediaPlayer.release();
         mMediaPlayer = null;
+        stopVibrate();
+    }
+
+    private void startVibrate() {
+        mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (mVibrator != null) {
+            mVibrator.vibrate(new long[]{100, 100}, 0);
+        }
+    }
+
+    private void stopVibrate() {
+        if (mVibrator != null) {
+            mVibrator.cancel();
+        }
     }
 
     @Override

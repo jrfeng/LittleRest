@@ -181,10 +181,11 @@ public class RulerView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        int scaleLineHalfWidth = (int) Math.round(mScaleLineWidth / 2.0);
+//        int scaleLineHalfWidth = (int) Math.round(mScaleLineWidth / 2.0);
 
+        int yOffset = mScaleLineWidth + 2;  // 多加两像素的偏移量，避免圆弧顶部与视图边缘相切
         mCenterX = getWidth() / 2;
-        mCenterY = getWidth() + scaleLineHalfWidth;
+        mCenterY = getWidth() + yOffset;
 
         mPaint.setColor(mScaleLineColor);
         mPaint.setStyle(Paint.Style.STROKE);
@@ -192,7 +193,7 @@ public class RulerView extends View {
 
         // 绘制刻度
         // 以垂直中线位置作为参考（0 度位置）
-        int startY = mScaleLineWidth / 2;
+        int startY = yOffset;
         for (int i = 0; i < 61; i++) {
             int rotateDegrees = i - 30;
 
