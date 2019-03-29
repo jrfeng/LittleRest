@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.os.PowerManager;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -131,6 +132,7 @@ public class MainActivityCountdownScene extends AbstractScene {
         int from = mClockView.getLayoutParams().width;
         ValueAnimator animator = AnimUtil.ofInt(from, mClockViewWidthAndHeight)
                 .duration(300)
+                .interpolator(new DecelerateInterpolator())
                 .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
