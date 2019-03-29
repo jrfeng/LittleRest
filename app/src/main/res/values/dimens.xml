@@ -12,6 +12,8 @@
     <dimen name="textSize_TextCountdownView">56dp</dimen>
     <dimen name="textSize_Timeout">40dp</dimen>
 
-    <dimen name="button_ok_height">48dp</dimen>
-    <dimen name="btn_bg_round_corner_radius">24dp</dimen>
+    <dimen name="button_ok_height">40dp</dimen>
+    <dimen name="btn_bg_round_corner_radius">20dp</dimen>
+
+    <dimen name="flashClockStrokeWidth">3dp</dimen>
 </resources>

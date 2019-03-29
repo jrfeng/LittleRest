@@ -7,18 +7,58 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="true">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline50"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
     <TextView
         android:id="@+id/tvMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/timeout"
-        android:textColor="#FFF"
+        android:textColor="@color/timeoutTextColor"
         android:textSize="@dimen/textSize_Timeout"
-        app:layout_constraintBottom_toTopOf="@id/btnOk"
+        app:layout_constraintBottom_toTopOf="@id/guideline50"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.46"
+        app:layout_constraintVertical_bias="0.25"
+        tools:ignore="SpUsage" />
+
+    <jrfeng.rest.widget.ClockView
+        android:id="@+id/clockView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:hourHandColor="@color/colorWhite"
+        app:hourHandWidth="@dimen/flashClockStrokeWidth"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.45"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.6"
+        app:minuteHandColor="@color/colorWhite"
+        app:minuteHandWidth="@dimen/flashClockStrokeWidth"
+        app:panelStrokeColor="@color/colorWhite"
+        app:panelStrokeWidth="@dimen/flashClockStrokeWidth" />
+
+    <TextView
+        android:id="@+id/tvTimeTable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/defaultText_Countdown_TimeLabel"
+        android:textColor="@color/timeoutTextColor"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toTopOf="@id/btnOk"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline50"
+        app:layout_constraintVertical_bias="0.75"
         tools:ignore="SpUsage" />
 
     <Button

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="jrfeng.rest">
 
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -15,20 +15,29 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity
-            android:name="jrfeng.rest.activity.MainActivity"
-            android:screenOrientation="portrait">
+        <!--<activity-->
+        <!--android:name="jrfeng.rest.activity.MainActivity"-->
+        <!--android:screenOrientation="portrait">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.MAIN" />-->
+
+        <!--<category android:name="android.intent.category.LAUNCHER" />-->
+        <!--</intent-filter>-->
+        <!--</activity>-->
+
+        <!--<activity android:name=".activity.TimeoutActivity" />-->
+        <!--<activity android:name=".activity.SettingActivity" />-->
+
+        <!--<service android:name=".service.CountdownService" />-->
+
+        <!--Debug-->
+        <activity android:name=".activity.TimeoutActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activity.TimeoutActivity" />
-        <activity android:name=".activity.SettingActivity" />
-
-        <service android:name=".service.CountdownService" />
     </application>
 
 </manifest>

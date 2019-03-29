@@ -7,6 +7,6 @@
 
     <string name="defaultText_Config_TimeLabel">0分钟</string>
     <string name="defaultText_Countdown_TimeLabel">共 0 分钟</string>
-    <string name="timeout">时间到了！</string>
+    <string name="timeout">时间到了</string>
     <string name="ok">知道了</string>
 </resources>

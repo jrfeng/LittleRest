@@ -6,6 +6,6 @@
     <string name="defaultText_Config_TimeLabel">0Min</string>
     <string name="defaultText_Countdown_TimeLabel">Total 0 Min</string>
 
-    <string name="timeout">Timeout!</string>
+    <string name="timeout">Timeout</string>
     <string name="ok">OK</string>
 </resources>

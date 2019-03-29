@@ -48,6 +48,11 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
     private static final int DEFAULT_SECOND_HAND_COLOR = DEFAULT_PANEL_STROKE_COLOR;
     private static final int DEFAULT_COUNTDOWN_BAR_COLOR = Color.WHITE;
 
+    private static final int DEFAULT_FLASH_COLOR = Color.parseColor("#FF8800");
+
+    private int mFlashColor;
+    private ValueAnimator mFlashAnimator;
+
     private Handler mHandler;
 
     private Context mContext;
@@ -126,6 +131,8 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
 
         mCountdownBarColor = DEFAULT_COUNTDOWN_BAR_COLOR;
 
+        mFlashColor = DEFAULT_FLASH_COLOR;
+
         if (attrs != null) {
             TypedArray typedArray = mContext.obtainStyledAttributes(attrs, R.styleable.ClockView);
 
@@ -144,6 +151,8 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
 
             mCountdownBarWidth = mPanelStrokeWidth;
             mCountdownBarColor = typedArray.getColor(R.styleable.ClockView_countdownBarColor, mCountdownBarColor);
+
+            mFlashColor = typedArray.getColor(R.styleable.ClockView_flashColor, mFlashColor);
 
             mShowSecondHand = typedArray.getBoolean(R.styleable.ClockView_showSecondHand, false);
             typedArray.recycle();
@@ -523,6 +532,36 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
                 .build();
 
         animator.start();
+    }
+
+    public void beginFlash() {
+        int flashStartColor = mPanelStrokeColor;
+        if (mFlashAnimator == null) {
+            mFlashAnimator = AnimUtil.ofInt(flashStartColor, mFlashColor)
+                    .duration(200)
+                    .evaluator(new ArgbEvaluator())
+                    .repeatMode(ValueAnimator.REVERSE)
+                    .repeatCount(-1)
+                    .addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(ValueAnimator animation) {
+                            int color = (int) animation.getAnimatedValue();
+                            mPanelStrokeColor = color;
+                            mHourHandColor = color;
+                            mMinuteHandColor = color;
+                            postInvalidate();
+                        }
+                    })
+                    .build();
+        }
+
+        mFlashAnimator.start();
+    }
+
+    public void endFlash() {
+        if (mFlashAnimator != null && mFlashAnimator.isRunning()) {
+            mFlashAnimator.cancel();
+        }
     }
 
     /**
