@@ -10,4 +10,8 @@
     <dimen name="textSize_ConfigTimeLabel">40dp</dimen>
     <dimen name="textSize_CountdownTimeLabel">20dp</dimen>
     <dimen name="textSize_TextCountdownView">56dp</dimen>
+    <dimen name="textSize_Timeout">40dp</dimen>
+
+    <dimen name="button_ok_height">48dp</dimen>
+    <dimen name="btn_bg_round_corner_radius">24dp</dimen>
 </resources>

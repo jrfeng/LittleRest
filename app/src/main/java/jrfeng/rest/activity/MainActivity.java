@@ -1,19 +1,21 @@
 package jrfeng.rest.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import jrfeng.anim.AnimUtil;
 import jrfeng.rest.R;
 import jrfeng.rest.fragment.ConfigFragment;
 import jrfeng.rest.fragment.CountdownFragment;
 import jrfeng.rest.widget.ClockView;
+import jrfeng.rest.widget.CountdownTimer;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean mCountdownRunning;
 
+    private boolean mActivityVisible;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,8 +46,29 @@ public class MainActivity extends AppCompatActivity {
         mSceneCountdown_ClockViewWidth = resources.getDimensionPixelSize(R.dimen.sceneCountdownClockWidth);
         mSceneCountdown_ClockViewHeight = resources.getDimensionPixelSize(R.dimen.sceneCountdownClockHeight);
 
-
         showConfigFragment();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FragmentManager fm = getSupportFragmentManager();
+        if (!mCountdownRunning && fm.findFragmentByTag(CountdownFragment.TAG) != null) {
+            cancelCountdown();
+            getSupportFragmentManager().popBackStack();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mActivityVisible = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mActivityVisible = false;
     }
 
     private void showConfigFragment() {
@@ -54,22 +79,9 @@ public class MainActivity extends AppCompatActivity {
         mClockView.showSecondHand(false);
 
         if (fragmentNotFilled(ConfigFragment.TAG)) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragmentContainer, new ConfigFragment(), ConfigFragment.TAG)
-                    .commit();
-        }
-    }
-
-    private void showCountdownFragment() {
-        ViewGroup.LayoutParams layoutParams = mClockView.getLayoutParams();
-        layoutParams.width = mSceneCountdown_ClockViewWidth;
-        layoutParams.height = mSceneCountdown_ClockViewHeight;
-        mClockView.requestLayout();
-        mClockView.showSecondHand(true);
-
-        if (fragmentNotFilled(CountdownFragment.TAG)) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragmentContainer, new CountdownFragment(), CountdownFragment.TAG)
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction()
+                    .replace(R.id.fragmentContainer, new ConfigFragment(), ConfigFragment.TAG)
                     .commit();
         }
     }
@@ -83,7 +95,16 @@ public class MainActivity extends AppCompatActivity {
         mCountdownRunning = true;
         mClockView.showSecondHand(true);
         mClockView.setKeepScreenOn(true);
-        mClockView.startCountdown(minute * 60, null);
+        mClockView.startCountdown(minute * 60, new CountdownTimer.OnTimeoutListener() {
+            @Override
+            public void timeout() {
+                mCountdownRunning = false;
+                startTimeoutActivity();
+                if (mActivityVisible) {
+                    cancelCountdown();
+                }
+            }
+        });
 
         ValueAnimator animator = createClockViewChangeBoundsAnim(
                 mSceneConfig_ClockViewWidth,
@@ -94,16 +115,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void cancelCountdown() {
-        mCountdownRunning = false;
-        mClockView.showSecondHand(false);
-        mClockView.setKeepScreenOn(false);
-        mClockView.cancelCountdown();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mCountdownRunning = false;
+                mClockView.showSecondHand(false);
+                mClockView.setKeepScreenOn(false);
+                mClockView.cancelCountdown();
 
-        ValueAnimator animator = createClockViewChangeBoundsAnim(
-                mSceneCountdown_ClockViewWidth,
-                mSceneConfig_ClockViewWidth);
-        animator.setInterpolator(new DecelerateInterpolator());
-        animator.start();
+                ValueAnimator animator = createClockViewChangeBoundsAnim(
+                        mSceneCountdown_ClockViewWidth,
+                        mSceneConfig_ClockViewWidth);
+                animator.setInterpolator(new DecelerateInterpolator());
+                animator.start();
+            }
+        });
     }
 
     private ValueAnimator createClockViewChangeBoundsAnim(int from, int to) {
@@ -138,5 +164,17 @@ public class MainActivity extends AppCompatActivity {
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+    }
+
+    private void startTimeoutActivity() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(getApplicationContext(), TimeoutActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+            }
+        });
     }
 }

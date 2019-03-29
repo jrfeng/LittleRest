@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">休息一下</string>
+
     <string name="des_start">启动</string>
     <string name="des_cancel">取消</string>
+
     <string name="defaultText_Config_TimeLabel">0分钟</string>
     <string name="defaultText_Countdown_TimeLabel">共 0 分钟</string>
+    <string name="timeout">时间到了！</string>
+    <string name="ok">知道了</string>
 </resources>

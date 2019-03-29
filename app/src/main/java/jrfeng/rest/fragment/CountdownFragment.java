@@ -3,6 +3,7 @@ package jrfeng.rest.fragment;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,12 @@ import androidx.fragment.app.FragmentManager;
 import jrfeng.rest.AppApplication;
 import jrfeng.rest.R;
 import jrfeng.rest.activity.MainActivity;
-import jrfeng.rest.widget.CountdownTimer;
 import jrfeng.rest.widget.TextCountdownView;
 
 public class CountdownFragment extends Fragment {
     public static final String TAG = "jrfeng.rest.fragment:CountdownFragment";
+
+    private static final String DEBUG_TAG = "CountdownFragment";
 
     private TextCountdownView mTextCountdownView;
     private TextView tvTimeLabel;
@@ -44,10 +46,18 @@ public class CountdownFragment extends Fragment {
         View layout = LayoutInflater.from(getContext())
                 .inflate(R.layout.fragment_countdown, container, false);
 
+        Log.d(DEBUG_TAG, "onCreate, Bundle is Null: " + (savedInstanceState == null));
+
         findViews(layout);
         initViews();
 
         return layout;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d(DEBUG_TAG, "onSaveInstanceState");
     }
 
     private void findViews(View layout) {
@@ -61,21 +71,24 @@ public class CountdownFragment extends Fragment {
         mTextCountdownView.setTypeface(typeface);
         tvTimeLabel.setTypeface(typeface);
 
-        mTextCountdownView.startCountdown(mCountdownMinute * 60, new CountdownTimer.OnTimeoutListener() {
-            @Override
-            public void timeout() {
-                cancelCountdown();
-            }
-        });
+        mTextCountdownView.startCountdown(mCountdownMinute * 60, null);
 
         setTimeLabelMinute(mCountdownMinute);
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cancelCountdown();
+                cancel();
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (isRemoving() && mTextCountdownView.isCountdownRunning()) {
+            mTextCountdownView.cancelCountdown();
+        }
     }
 
     private void setTimeLabelMinute(int minute) {
@@ -83,25 +96,17 @@ public class CountdownFragment extends Fragment {
         tvTimeLabel.setText(timeLabel.replaceFirst("[0-9]+", String.valueOf(minute)));
     }
 
-    private void cancelCountdown() {
+    private void cancel() {
         final MainActivity activity = (MainActivity) getActivity();
         if (activity != null) {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     activity.cancelCountdown();
+                    FragmentManager fm = activity.getSupportFragmentManager();
+                    fm.popBackStack();
                 }
             });
-            FragmentManager fm = activity.getSupportFragmentManager();
-            fm.popBackStack();
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mTextCountdownView.isCountdownRunning()) {
-            mTextCountdownView.cancelCountdown();
         }
     }
 }
