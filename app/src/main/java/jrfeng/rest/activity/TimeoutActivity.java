@@ -6,7 +6,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -85,7 +84,7 @@ public class TimeoutActivity extends AppCompatActivity {
         mMediaPlayer = MediaPlayer.create(this, R.raw.default_ring);
         mMediaPlayer.setLooping(true);
         mMediaPlayer.start();
-        if (isVolumeLow()) {
+        if (isLowVolume()) {
             startVibrate();
         }
     }
@@ -126,15 +125,12 @@ public class TimeoutActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    private boolean isVolumeLow() {
+    private boolean isLowVolume() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
             int volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-
-            Log.d("App", "Volume: " + volume);
-
-            return volume < (maxVolume * 0.4);
+            return volume < (maxVolume * 0.2);
         }
         return false;
     }
