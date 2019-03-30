@@ -41,7 +41,7 @@ public class TimeoutScene extends AbstractScene {
     @NonNull
     @Override
     protected Scene onCreateScene(@NonNull ViewGroup sceneRoot, @NonNull Context context) {
-        return Scene.getSceneForLayout(sceneRoot, R.layout.fragment_timeout, context);
+        return Scene.getSceneForLayout(sceneRoot, R.layout.scene_timeout, context);
     }
 
     @Override
@@ -49,11 +49,6 @@ public class TimeoutScene extends AbstractScene {
         findViews(getSceneRoot());
         initViews();
         addListener();
-    }
-
-    @Override
-    public void onTransitionEnd(@NonNull Transition transition) {
-        startFlash();
     }
 
     private void findViews(View rootView) {
@@ -110,24 +105,6 @@ public class TimeoutScene extends AbstractScene {
             mMediaPlayer = null;
             stopVibrate();
         }
-    }
-
-    /**
-     * 时钟开始闪烁。
-     */
-    public void startFlash() {
-        if (mClockView != null) {
-            mClockView.startFlash();
-            mClockView.setKeepScreenOn(true);
-        }
-    }
-
-    /**
-     * 时钟结束闪烁。
-     */
-    public void endFlash() {
-        mClockView.endFlash();
-        mClockView.setKeepScreenOn(false);
     }
 
     private void startVibrate() {

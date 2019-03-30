@@ -25,7 +25,8 @@
         <attr name="showSecondHand" format="boolean" />
 
         <!-- Flash End Color-->
-        <attr name="flashColor" format="color"/>
+        <attr name="flashColor" format="color" />
+        <attr name="enableFlash" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="RulerView">

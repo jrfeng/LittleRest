@@ -53,6 +53,7 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
     private static final int DEFAULT_FLASH_COLOR = Color.parseColor("#FF8800");
 
     private int mFlashColor;
+    private boolean mEnabledFlash;
     private ValueAnimator mFlashAnimator;
 
     private Handler mHandler;
@@ -155,6 +156,7 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
             mCountdownBarColor = typedArray.getColor(R.styleable.ClockView_countdownBarColor, mCountdownBarColor);
 
             mFlashColor = typedArray.getColor(R.styleable.ClockView_flashColor, mFlashColor);
+            mEnabledFlash = typedArray.getBoolean(R.styleable.ClockView_enableFlash, false);
 
             mShowSecondHand = typedArray.getBoolean(R.styleable.ClockView_showSecondHand, false);
             typedArray.recycle();
@@ -509,7 +511,8 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
         animator.start();
     }
 
-    public void startFlash() {
+    private void startFlash() {
+        setKeepScreenOn(true);
         int flashStartColor = mPanelStrokeColor;
         if (mFlashAnimator == null) {
             mFlashAnimator = AnimUtil.ofInt(flashStartColor, mFlashColor)
@@ -533,9 +536,19 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
         mFlashAnimator.start();
     }
 
-    public void endFlash() {
+    private void endFlash() {
+        setKeepScreenOn(false);
         if (mFlashAnimator != null && mFlashAnimator.isRunning()) {
             mFlashAnimator.cancel();
+        }
+    }
+
+    public void enableFlash(boolean enable) {
+        mEnabledFlash = enable;
+        if (enable) {
+            startFlash();
+        } else {
+            endFlash();
         }
     }
 
@@ -546,6 +559,10 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
     public void onStart() {
         if (!mTimerRunning) {
             start();
+        }
+
+        if (mEnabledFlash) {
+            startFlash();
         }
     }
 
@@ -563,6 +580,7 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onStop() {
         mShowing = false;
+        endFlash();
     }
 
     /**

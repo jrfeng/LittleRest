@@ -42,15 +42,8 @@ public class TimeoutActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        mTimeoutScene.startFlash();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
-        mTimeoutScene.endFlash();
         if (isFinishing()) {
             mTimeoutScene.stopRingAndVibrate();
         }
