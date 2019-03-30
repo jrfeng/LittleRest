@@ -5,12 +5,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleObserver;
 import androidx.transition.AutoTransition;
 import androidx.transition.Scene;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 
-public abstract class AbstractScene implements Transition.TransitionListener {
+public abstract class AbstractScene implements Transition.TransitionListener, LifecycleObserver {
     private ViewGroup mSceneRoot;
     private Context mContext;
 

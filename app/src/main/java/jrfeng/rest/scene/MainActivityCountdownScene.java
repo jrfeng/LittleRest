@@ -154,13 +154,8 @@ public class MainActivityCountdownScene extends AbstractScene {
         tvTimeLabel.setText(timeLabel.replaceFirst("[0-9]+", String.valueOf(minute)));
     }
 
-
     private void startTimeoutActivity() {
-        Context context = getContext();
-        Intent intent = new Intent(context, TimeoutActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        context.startActivity(intent);
+        TimeoutActivity.start(getContext());
     }
 
     private void cancel() {
@@ -170,6 +165,4 @@ public class MainActivityCountdownScene extends AbstractScene {
         mTextCountdownView.setKeepScreenOn(false);
         new MainActivityConfigScene(getSceneRoot(), getContext()).go();
     }
-
-
 }

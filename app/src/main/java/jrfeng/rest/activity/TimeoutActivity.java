@@ -1,114 +1,36 @@
 package jrfeng.rest.activity;
 
 import android.content.Context;
-import android.graphics.Typeface;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import jrfeng.rest.AppApplication;
 import jrfeng.rest.R;
-import jrfeng.rest.widget.ClockView;
+import jrfeng.rest.scene.TimeoutScene;
 
 public class TimeoutActivity extends AppCompatActivity {
-    private MediaPlayer mMediaPlayer;
-    private Vibrator mVibrator;
-
-    private TextView tvMessage;
-    private ClockView mClockView;
-    private TextView tvTimeLabel;
-    private Button btnOK;
+    private TimeoutScene mTimeoutScene;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeout);
 
-        findViews();
-        initViews();
-        playRing();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mClockView.beginFlash();
-        mClockView.setKeepScreenOn(true);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mClockView.setKeepScreenOn(false);
-        mClockView.endFlash();
-        if (isFinishing()) {
-            stopRing();
-        }
-    }
-
-    public void findViews() {
-        tvMessage = findViewById(R.id.tvMessage);
-        mClockView = findViewById(R.id.clockView);
-        tvTimeLabel = findViewById(R.id.tvTimeTable);
-        btnOK = findViewById(R.id.btnOk);
-    }
-
-    private void initViews() {
-        Typeface typeface = AppApplication.getInstance().getTypeface();
-        tvMessage.setTypeface(typeface);
-        tvTimeLabel.setTypeface(typeface);
-        btnOK.setTypeface(typeface);
-
-        setTimeLabelMinute(AppApplication.getInstance().getCountdownMinute());
-        btnOK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-    }
-
-    private void setTimeLabelMinute(int minute) {
-        String timeLabel = tvTimeLabel.getText().toString();
-        tvTimeLabel.setText(timeLabel.replaceFirst("[0-9]+", String.valueOf(minute)));
-    }
-
-    private void playRing() {
-        mMediaPlayer = MediaPlayer.create(this, R.raw.default_ring);
-        mMediaPlayer.setLooping(true);
-        mMediaPlayer.start();
-        if (isLowVolume()) {
-            startVibrate();
-        }
-    }
-
-    private void stopRing() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-            stopVibrate();
-        }
-    }
-
-    private void startVibrate() {
-        mVibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        if (mVibrator != null) {
-            mVibrator.vibrate(new long[]{800, 400}, 0);
-        }
-    }
-
-    private void stopVibrate() {
-        if (mVibrator != null) {
-            mVibrator.cancel();
-        }
+        ViewGroup container = findViewById(R.id.container);
+        mTimeoutScene = new TimeoutScene(container,
+                this,
+                this,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finish();
+                    }
+                });
+        mTimeoutScene.go();
     }
 
     @Override
@@ -120,18 +42,16 @@ public class TimeoutActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            stopRing();
+            mTimeoutScene.stopRingAndVibrate();
         }
         return super.onKeyDown(keyCode, event);
     }
 
-    private boolean isLowVolume() {
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        if (audioManager != null) {
-            int volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-            int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            return volume < (maxVolume * 0.2);
-        }
-        return false;
+    public static void start(Context context) {
+        Intent intent = new Intent(context, TimeoutActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
     }
 }
