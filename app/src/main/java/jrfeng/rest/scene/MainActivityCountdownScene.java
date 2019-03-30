@@ -1,6 +1,7 @@
 package jrfeng.rest.scene;
 
 import android.animation.ValueAnimator;
+import android.app.AlarmManager;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.PowerManager;

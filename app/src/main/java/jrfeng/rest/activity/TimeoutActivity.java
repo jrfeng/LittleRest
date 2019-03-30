@@ -3,6 +3,7 @@ package jrfeng.rest.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,8 @@ public class TimeoutActivity extends AppCompatActivity {
                 });
         mTimeoutScene.go();
         mTimeoutScene.startRingMaybeVibrate();
+
+        lightUpScreen();
     }
 
     @Override
@@ -69,5 +72,16 @@ public class TimeoutActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         context.startActivity(intent);
+    }
+
+    private void lightUpScreen() {
+        PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+        if (pm != null) {
+            PowerManager.WakeLock wakeLock = pm.newWakeLock(
+                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK
+                            | PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                    "jrfeng.rest.activity:lightUpScreen");
+            wakeLock.acquire(300_000);    // 唤醒屏幕 5 分钟
+        }
     }
 }
