@@ -26,9 +26,6 @@
         </activity>
 
         <activity android:name=".activity.TimeoutActivity" />
-        <activity android:name=".activity.SettingActivity" />
-
-        <service android:name=".service.CountdownService" />
     </application>
 
 </manifest>
