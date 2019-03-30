@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.PowerManager;
 import android.os.Vibrator;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +11,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.OnLifecycleEvent;
 import androidx.transition.Scene;
 import androidx.transition.Transition;
 import jrfeng.rest.AppApplication;
@@ -34,15 +30,11 @@ public class TimeoutScene extends AbstractScene {
 
     private View.OnClickListener mOkButtonClickListener;
 
-    private PowerManager.WakeLock mLightUpScreenWakeLock;
-
     public TimeoutScene(@NonNull ViewGroup sceneRoot,
                         @NonNull Context context,
-                        @NonNull LifecycleOwner lifecycleOwner,
                         @NonNull View.OnClickListener listener) {
         super(sceneRoot, context);
         mContext = context;
-        lifecycleOwner.getLifecycle().addObserver(this);
         mOkButtonClickListener = listener;
     }
 
@@ -61,20 +53,7 @@ public class TimeoutScene extends AbstractScene {
 
     @Override
     public void onTransitionEnd(@NonNull Transition transition) {
-        mClockView.beginFlash();
-        mClockView.setKeepScreenOn(true);
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    public void onCreate() {
-        startRingMaybeVibrate();
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    public void onStop() {
-        mClockView.endFlash();
-        releaseWakeLock();
-        mClockView.setKeepScreenOn(false);
+        startFlash();
     }
 
     private void findViews(View rootView) {
@@ -108,8 +87,11 @@ public class TimeoutScene extends AbstractScene {
         tvTimeLabel.setText(timeLabel.replaceFirst("[0-9]+", String.valueOf(minute)));
     }
 
-    private void startRingMaybeVibrate() {
-        lightUpScreen();
+    /**
+     * 响铃，如果铃声的音量太小，则还会振动。
+     */
+    public void startRingMaybeVibrate() {
+//        lightUpScreen();
         mMediaPlayer = MediaPlayer.create(mContext, R.raw.default_ring);
         mMediaPlayer.setLooping(true);
         mMediaPlayer.start();
@@ -128,6 +110,24 @@ public class TimeoutScene extends AbstractScene {
             mMediaPlayer = null;
             stopVibrate();
         }
+    }
+
+    /**
+     * 时钟开始闪烁。
+     */
+    public void startFlash() {
+        if (mClockView != null) {
+            mClockView.startFlash();
+            mClockView.setKeepScreenOn(true);
+        }
+    }
+
+    /**
+     * 时钟结束闪烁。
+     */
+    public void endFlash() {
+        mClockView.endFlash();
+        mClockView.setKeepScreenOn(false);
     }
 
     private void startVibrate() {
@@ -151,25 +151,5 @@ public class TimeoutScene extends AbstractScene {
             return volume < (maxVolume * 0.2);
         }
         return false;
-    }
-
-    private void lightUpScreen() {
-        if (mLightUpScreenWakeLock == null || !mLightUpScreenWakeLock.isHeld()) {
-            PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-            if (pm != null) {
-                mLightUpScreenWakeLock = pm.newWakeLock(
-                        PowerManager.SCREEN_BRIGHT_WAKE_LOCK
-                                | PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                        "jrfeng.rest.activity:lightUpScreen");
-                mLightUpScreenWakeLock.acquire(300_000);    // 唤醒屏幕 5 分钟
-            }
-        }
-    }
-
-    private void releaseWakeLock() {
-        if (mLightUpScreenWakeLock != null && mLightUpScreenWakeLock.isHeld()) {
-            mLightUpScreenWakeLock.release();
-            mLightUpScreenWakeLock = null;
-        }
     }
 }

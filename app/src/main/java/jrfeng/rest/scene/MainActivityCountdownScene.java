@@ -2,7 +2,6 @@ package jrfeng.rest.scene;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.PowerManager;
 import android.view.View;
@@ -125,7 +124,7 @@ public class MainActivityCountdownScene extends AbstractScene {
             @Override
             public void timeout() {
                 cancel();
-                startTimeoutActivity();
+                alertTimeout();
             }
         });
 
@@ -154,7 +153,7 @@ public class MainActivityCountdownScene extends AbstractScene {
         tvTimeLabel.setText(timeLabel.replaceFirst("[0-9]+", String.valueOf(minute)));
     }
 
-    private void startTimeoutActivity() {
+    private void alertTimeout() {
         TimeoutActivity.start(getContext());
     }
 

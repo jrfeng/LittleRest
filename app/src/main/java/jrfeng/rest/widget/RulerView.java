@@ -22,6 +22,7 @@ import android.view.animation.LinearInterpolator;
 import androidx.annotation.Nullable;
 import jrfeng.anim.AnimUtil;
 import jrfeng.rest.R;
+import jrfeng.rest.widget.util.ViewUtil;
 
 public class RulerView extends View {
     private static final String TAG = "RulerView";
@@ -85,18 +86,18 @@ public class RulerView extends View {
     }
 
     private void init() {
-        mDefaultWidth = dpToPx(DEFAULT_WIDTH_DP);
-        mDefaultHeight = dpToPx(DEFAULT_HEIGHT_DP);
+        mDefaultWidth = ViewUtil.dpToPx(mContext, DEFAULT_WIDTH_DP);
+        mDefaultHeight = ViewUtil.dpToPx(mContext, DEFAULT_HEIGHT_DP);
 
-        mScaleLineWidth = dpToPx(DEFAULT_SCALE_LINE_WIDTH_DP);
-        mScale10Length = dpToPx(DEFAULT_SCALE_10_LENGTH);
-        mScale5Length = dpToPx(DEFAULT_SCALE_5_LENGTH);
-        mScale1Length = dpToPx(DEFAULT_SCALE_1_LENGTH);
+        mScaleLineWidth = ViewUtil.dpToPx(mContext, DEFAULT_SCALE_LINE_WIDTH_DP);
+        mScale10Length = ViewUtil.dpToPx(mContext, DEFAULT_SCALE_10_LENGTH);
+        mScale5Length = ViewUtil.dpToPx(mContext, DEFAULT_SCALE_5_LENGTH);
+        mScale1Length = ViewUtil.dpToPx(mContext, DEFAULT_SCALE_1_LENGTH);
 
         mScaleLineColor = DEFAULT_SCALE_LINE_COLOR;
 
-        mCenterYOffset = dpToPx(CENTER_Y_OFFSET);
-        mTextSize = dpToPx(DEFAULT_TEXT_SIZE);
+        mCenterYOffset = ViewUtil.dpToPx(mContext, CENTER_Y_OFFSET);
+        mTextSize = ViewUtil.dpToPx(mContext, DEFAULT_TEXT_SIZE);
 
         mIndicatorBitmap = getBitmapFromResId(DEFAULT_INDICATOR_RES_ID);
 
@@ -145,36 +146,9 @@ public class RulerView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int measureWidth = measureSize(widthMeasureSpec, mDefaultWidth);
-        int measureHeight = measureSize(heightMeasureSpec, mDefaultHeight);
+        int measureWidth = ViewUtil.measureSize(widthMeasureSpec, mDefaultWidth);
+        int measureHeight = ViewUtil.measureSize(heightMeasureSpec, mDefaultHeight);
         setMeasuredDimension(measureWidth, measureHeight);
-    }
-
-    private int measureSize(int spec, int defaultValue) {
-        int mode = MeasureSpec.getMode(spec);
-        int size = MeasureSpec.getSize(spec);
-
-        int result = 0;
-        switch (mode) {
-            case MeasureSpec.EXACTLY:
-                result = size;
-                break;
-            case MeasureSpec.AT_MOST:
-                result = Math.min(size, defaultValue);
-                break;
-            case MeasureSpec.UNSPECIFIED:
-                result = defaultValue;
-        }
-
-        return result;
-    }
-
-    private int dpToPx(float dp) {
-        return Math.round(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dp,
-                mContext.getResources().getDisplayMetrics()
-        ));
     }
 
     @Override

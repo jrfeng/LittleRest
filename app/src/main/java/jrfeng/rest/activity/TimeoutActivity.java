@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,11 +20,16 @@ public class TimeoutActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Window win = getWindow();
+        win.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+
         setContentView(R.layout.activity_timeout);
 
         ViewGroup container = findViewById(R.id.container);
         mTimeoutScene = new TimeoutScene(container,
-                this,
                 this,
                 new View.OnClickListener() {
                     @Override
@@ -31,6 +38,22 @@ public class TimeoutActivity extends AppCompatActivity {
                     }
                 });
         mTimeoutScene.go();
+        mTimeoutScene.startRingMaybeVibrate();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mTimeoutScene.startFlash();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mTimeoutScene.endFlash();
+        if (isFinishing()) {
+            mTimeoutScene.stopRingAndVibrate();
+        }
     }
 
     @Override

@@ -23,12 +23,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.ViewUtils;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.OnLifecycleEvent;
 import jrfeng.anim.AnimUtil;
 import jrfeng.rest.R;
+import jrfeng.rest.widget.util.ViewUtil;
 
 public class ClockView extends View implements LifecycleObserver, CountdownTimer {
     private static final String TAG = "ClockView";
@@ -113,20 +115,20 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
     }
 
     private void init(@Nullable AttributeSet attrs) {
-        mDefaultWidth = dpToPx(DEFAULT_WIDTH_DP);
-        mDefaultHeight = dpToPx(DEFAULT_HEIGHT_DP);
+        mDefaultWidth = ViewUtil.dpToPx(mContext, DEFAULT_WIDTH_DP);
+        mDefaultHeight = ViewUtil.dpToPx(mContext, DEFAULT_HEIGHT_DP);
 
-        mPanelStrokeWidth = dpToPx(DEFAULT_PANEL_STROKE_WIDTH);
+        mPanelStrokeWidth = ViewUtil.dpToPx(mContext, DEFAULT_PANEL_STROKE_WIDTH);
         mPanelStrokeColor = DEFAULT_PANEL_STROKE_COLOR;
         mPanelFillColor = DEFAULT_PANEL_FILL_COLOR;
 
-        mHourHandWidth = dpToPx(DEFAULT_HOUR_HAND_WIDTH);
+        mHourHandWidth = ViewUtil.dpToPx(mContext, DEFAULT_HOUR_HAND_WIDTH);
         mHourHandColor = DEFAULT_HOUR_HAND_COLOR;
 
-        mMinuteHandWidth = dpToPx(DEFAULT_MINUTE_HAND_WIDTH);
+        mMinuteHandWidth = ViewUtil.dpToPx(mContext, DEFAULT_MINUTE_HAND_WIDTH);
         mMinuteHandColor = DEFAULT_MINUTE_HAND_COLOR;
 
-        mSecondHandWidth = dpToPx(DEFAULT_SECOND_HAND_WIDTH);
+        mSecondHandWidth = ViewUtil.dpToPx(mContext, DEFAULT_SECOND_HAND_WIDTH);
         mSecondHandColor = DEFAULT_SECOND_HAND_COLOR;
 
         mCountdownBarColor = DEFAULT_COUNTDOWN_BAR_COLOR;
@@ -164,14 +166,6 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setFilterBitmap(true);
-    }
-
-    private int dpToPx(float dp) {
-        return Math.round(TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dp,
-                mContext.getResources().getDisplayMetrics()
-        ));
     }
 
     private void updateClockPanel(long mills) {
@@ -225,28 +219,9 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int measureWidth = measureSize(widthMeasureSpec, mDefaultWidth);
-        int measureHeight = measureSize(heightMeasureSpec, mDefaultHeight);
+        int measureWidth = ViewUtil.measureSize(widthMeasureSpec, mDefaultWidth);
+        int measureHeight = ViewUtil.measureSize(heightMeasureSpec, mDefaultHeight);
         setMeasuredDimension(measureWidth, measureHeight);
-    }
-
-    private int measureSize(int spec, int defaultValue) {
-        int mode = MeasureSpec.getMode(spec);
-        int size = MeasureSpec.getSize(spec);
-
-        int result = 0;
-        switch (mode) {
-            case MeasureSpec.EXACTLY:
-                result = size;
-                break;
-            case MeasureSpec.AT_MOST:
-                result = Math.min(size, defaultValue);
-                break;
-            case MeasureSpec.UNSPECIFIED:
-                result = defaultValue;
-        }
-
-        return result;
     }
 
     @Override
@@ -534,7 +509,7 @@ public class ClockView extends View implements LifecycleObserver, CountdownTimer
         animator.start();
     }
 
-    public void beginFlash() {
+    public void startFlash() {
         int flashStartColor = mPanelStrokeColor;
         if (mFlashAnimator == null) {
             mFlashAnimator = AnimUtil.ofInt(flashStartColor, mFlashColor)
