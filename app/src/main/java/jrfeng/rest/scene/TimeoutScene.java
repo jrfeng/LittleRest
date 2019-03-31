@@ -90,7 +90,7 @@ public class TimeoutScene extends AbstractScene {
         mMediaPlayer = MediaPlayer.create(mContext, R.raw.default_ring);
         mMediaPlayer.setLooping(true);
         mMediaPlayer.start();
-        if (isLowVolume()) {
+        if (shouldVibrate()) {
             startVibrate();
         }
     }
@@ -120,12 +120,13 @@ public class TimeoutScene extends AbstractScene {
         }
     }
 
-    private boolean isLowVolume() {
+    // 音量太小，或者扬声器没有打开（例如插上了耳机）时，会返回 true，其他情况下返回 false
+    private boolean shouldVibrate() {
         AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
             int volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            return volume < (maxVolume * 0.2);
+            return volume < (maxVolume * 0.2) || audioManager.isSpeakerphoneOn();
         }
         return false;
     }
