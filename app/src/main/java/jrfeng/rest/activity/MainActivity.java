@@ -6,6 +6,7 @@ import jrfeng.rest.R;
 import jrfeng.rest.scene.MainActivityConfigScene;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setVolumeControlStream(AudioManager.STREAM_ALARM);
 
         ViewGroup sceneRoot = findViewById(R.id.sceneRoot);
         MainActivityConfigScene configScene = new MainActivityConfigScene(sceneRoot, this);

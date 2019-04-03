@@ -4,11 +4,16 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.transition.Scene;
@@ -18,13 +23,14 @@ import jrfeng.rest.R;
 import jrfeng.rest.widget.ClockView;
 
 public class TimeoutScene extends AbstractScene {
+    private static final String TAG = "TimeoutScene";
+
     private Context mContext;
 
     private MediaPlayer mMediaPlayer;
     private Vibrator mVibrator;
 
     private TextView tvMessage;
-    private ClockView mClockView;
     private TextView tvTimeLabel;
     private Button btnOK;
 
@@ -53,7 +59,6 @@ public class TimeoutScene extends AbstractScene {
 
     private void findViews(View rootView) {
         tvMessage = rootView.findViewById(R.id.tvMessage);
-        mClockView = rootView.findViewById(R.id.clockView);
         tvTimeLabel = rootView.findViewById(R.id.tvTimeTable);
         btnOK = rootView.findViewById(R.id.btnOk);
     }
@@ -87,9 +92,25 @@ public class TimeoutScene extends AbstractScene {
      */
     public void startRingMaybeVibrate() {
 //        lightUpScreen();
-        mMediaPlayer = MediaPlayer.create(mContext, R.raw.default_ring);
-        mMediaPlayer.setLooping(true);
-        mMediaPlayer.start();
+        mMediaPlayer = new MediaPlayer();
+        try {
+            // 获取系统铃声 Uri
+            Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+            mMediaPlayer.setDataSource(mContext, alarmUri);
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.setLooping(true);
+                    mp.start();
+                }
+            });
+            mMediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            Log.e(TAG, e.toString());
+            e.printStackTrace();
+        }
+
         if (shouldVibrate()) {
             startVibrate();
         }
@@ -120,13 +141,17 @@ public class TimeoutScene extends AbstractScene {
         }
     }
 
-    // 音量太小，或者扬声器没有打开（例如插上了耳机）时，会返回 true，其他情况下返回 false
+    // 如果闹钟音量太小，则返回 true，其他情况下返回 false
     private boolean shouldVibrate() {
         AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
         if (audioManager != null) {
-            int volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-            int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            return volume < (maxVolume * 0.2) || audioManager.isSpeakerphoneOn();
+            int volume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM);
+            int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
+
+            Log.d(TAG, "Max    : " + maxVolume);
+            Log.d(TAG, "Current: " + volume);
+
+            return volume < (maxVolume * 0.3);
         }
         return false;
     }

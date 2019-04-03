@@ -2,6 +2,7 @@ package jrfeng.rest.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.view.KeyEvent;
@@ -28,6 +29,8 @@ public class TimeoutActivity extends AppCompatActivity {
                 | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 
         setContentView(R.layout.activity_timeout);
+
+        setVolumeControlStream(AudioManager.STREAM_ALARM);
 
         ViewGroup container = findViewById(R.id.container);
         mTimeoutScene = new TimeoutScene(container,
