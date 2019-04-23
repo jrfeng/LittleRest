@@ -107,9 +107,13 @@ public class CountdownService extends Service {
     private void startForeground(int minutes) {
         final int seconds = minutes * 60;
 
+        String contentText = getResources().getString(R.string.defaultText_Countdown_TimeLabel);
+        contentText = contentText.replaceAll("\\d", String.valueOf(minutes))
+                .toLowerCase();
+
         Notification notification = mNotificationBuilder
                 .setProgress(seconds, 0, false)
-                .setContentText("共 " + minutes + " 分钟")
+                .setContentText(contentText)
                 .build();
 
         startForeground(ID_FOREGROUND, notification);
