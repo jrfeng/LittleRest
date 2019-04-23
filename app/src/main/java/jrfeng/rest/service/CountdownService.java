@@ -129,6 +129,8 @@ public class CountdownService extends Service {
 
                 if (!mCancelled) {
                     mNotificationManager.notify(ID_FOREGROUND, mNotificationBuilder.build());
+                } else {
+                    mNotificationManager.cancelAll();
                 }
             }
         }, 0, 1000);
