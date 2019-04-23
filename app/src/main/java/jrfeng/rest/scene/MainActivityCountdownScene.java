@@ -1,12 +1,9 @@
 package jrfeng.rest.scene;
 
 import android.animation.ValueAnimator;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Typeface;
-import android.os.IBinder;
 import android.os.PowerManager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +36,7 @@ public class MainActivityCountdownScene extends AbstractScene {
 
     private PowerManager.WakeLock mWakeLock;
 
-    private ServiceConnection mServiceConnection;
+    private Intent mCountdownServiceIntent;
 
     public MainActivityCountdownScene(@NonNull ViewGroup sceneRoot, @NonNull Context context) {
         super(sceneRoot, context);
@@ -48,18 +45,6 @@ public class MainActivityCountdownScene extends AbstractScene {
         mNotoSansThin = mApplication.getTypeface();
 
         mClockViewWidthAndHeight = context.getResources().getDimensionPixelSize(R.dimen.sceneCountdownClockWidth);
-
-        mServiceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
-        };
 
         initWakeLock(context);
     }
@@ -159,7 +144,7 @@ public class MainActivityCountdownScene extends AbstractScene {
                 .build();
         animator.start();
 
-        DEBUG_CountdownService(mApplication.getCountdownMinute());
+        startCountdownService(mApplication.getCountdownMinute());
     }
 
     private void setTimeLabelMinute(int minute) {
@@ -180,15 +165,14 @@ public class MainActivityCountdownScene extends AbstractScene {
         new MainActivityConfigScene(getSceneRoot(), getContext()).go();
     }
 
-
-    private void DEBUG_CountdownService(int minutes) {
-        Intent intent = new Intent(getContext(), CountdownService.class);
-        intent.putExtra(CountdownService.KEY_START_MSEC, System.currentTimeMillis());
-        intent.putExtra(CountdownService.KEY_COUNTDOWN_MINUTES, minutes);
-        getContext().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    private void startCountdownService(int minutes) {
+        mCountdownServiceIntent = new Intent(getContext(), CountdownService.class);
+        mCountdownServiceIntent.putExtra(CountdownService.KEY_START_MSEC, System.currentTimeMillis());
+        mCountdownServiceIntent.putExtra(CountdownService.KEY_COUNTDOWN_MINUTES, minutes);
+        getContext().startService(mCountdownServiceIntent);
     }
 
     private void cancelCountdownService() {
-        getContext().unbindService(mServiceConnection);
+        getContext().stopService(mCountdownServiceIntent);
     }
 }

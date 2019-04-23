@@ -5,8 +5,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,9 +28,11 @@ public class CountdownService extends Service {
     private static final int ID_FOREGROUND = 1;
     private static final String ID_NOTIFICATION_CHANNEL = "CountDownService";
 
+    private static final String ACTION_TIMEOUT = "jrfeng.rest.service.action.ACTION_TIMEOUT";
+
     private AlarmManager mAlarmManager;
 
-    private PendingIntent mStartTimeoutActivity;
+    private PendingIntent mTimeoutBroadcast;
 
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mNotificationBuilder;
@@ -35,20 +41,32 @@ public class CountdownService extends Service {
     private int mElapseSeconds;
     private boolean mCancelled;
 
+    private boolean mRunning;
+
+    private BroadcastReceiver mTimeoutReceiver;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
         mAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        Intent startTimeoutActivity = new Intent(this, TimeoutActivity.class);
-        startTimeoutActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startTimeoutActivity.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startTimeoutActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        mStartTimeoutActivity = PendingIntent.getActivity(
+        mTimeoutReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("App", "TimeoutReceiver OK");
+                TimeoutActivity.start(context);
+                stopSelf();
+            }
+        };
+
+        registerReceiver(mTimeoutReceiver, new IntentFilter(ACTION_TIMEOUT));
+
+        Intent timeoutBroadcastIntent = new Intent(ACTION_TIMEOUT);
+        mTimeoutBroadcast = PendingIntent.getBroadcast(
                 this,
                 0,
-                startTimeoutActivity,
+                timeoutBroadcastIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
 
         Intent mainActivityIntent = new Intent(this, MainActivity.class);
@@ -66,10 +84,18 @@ public class CountdownService extends Service {
                 .setOnlyAlertOnce(true);
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (!mRunning) {
+            mRunning = true;
+            startCountdown(intent);
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        startCountdown(intent);
         return null;
     }
 
@@ -94,11 +120,12 @@ public class CountdownService extends Service {
     }
 
     private void startCountdown(long startAt, int ms) {
-        mAlarmManager.setExact(AlarmManager.RTC_WAKEUP, startAt + ms, mStartTimeoutActivity);
+        mAlarmManager.setExact(AlarmManager.RTC_WAKEUP, startAt + ms, mTimeoutBroadcast);
     }
 
     private void cancelCountdown() {
-        mAlarmManager.cancel(mStartTimeoutActivity);
+        unregisterReceiver(mTimeoutReceiver);
+        mAlarmManager.cancel(mTimeoutBroadcast);
         mTimer.cancel();
         mCancelled = true;
         stopForeground();
@@ -129,8 +156,6 @@ public class CountdownService extends Service {
 
                 if (!mCancelled) {
                     mNotificationManager.notify(ID_FOREGROUND, mNotificationBuilder.build());
-                } else {
-                    mNotificationManager.cancelAll();
                 }
             }
         }, 0, 1000);
@@ -138,5 +163,6 @@ public class CountdownService extends Service {
 
     private void stopForeground() {
         stopForeground(true);
+        mNotificationManager.cancel(ID_FOREGROUND);
     }
 }
