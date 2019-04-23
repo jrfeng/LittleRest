@@ -1,9 +1,12 @@
 package jrfeng.rest.scene;
 
 import android.animation.ValueAnimator;
-import android.app.AlarmManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Typeface;
+import android.os.IBinder;
 import android.os.PowerManager;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +22,8 @@ import jrfeng.anim.AnimUtil;
 import jrfeng.rest.AppApplication;
 import jrfeng.rest.R;
 import jrfeng.rest.activity.TimeoutActivity;
+import jrfeng.rest.service.CountdownService;
 import jrfeng.rest.widget.ClockView;
-import jrfeng.rest.widget.CountdownTimer;
 import jrfeng.rest.widget.TextCountdownView;
 
 public class MainActivityCountdownScene extends AbstractScene {
@@ -36,6 +39,8 @@ public class MainActivityCountdownScene extends AbstractScene {
 
     private PowerManager.WakeLock mWakeLock;
 
+    private ServiceConnection mServiceConnection;
+
     public MainActivityCountdownScene(@NonNull ViewGroup sceneRoot, @NonNull Context context) {
         super(sceneRoot, context);
 
@@ -43,6 +48,18 @@ public class MainActivityCountdownScene extends AbstractScene {
         mNotoSansThin = mApplication.getTypeface();
 
         mClockViewWidthAndHeight = context.getResources().getDimensionPixelSize(R.dimen.sceneCountdownClockWidth);
+
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        };
 
         initWakeLock(context);
     }
@@ -121,13 +138,7 @@ public class MainActivityCountdownScene extends AbstractScene {
         mTextCountdownView.startCountdown(seconds, null);
         mTextCountdownView.setKeepScreenOn(true);
         mClockView.showSecondHand(true);
-        mClockView.startCountdown(seconds, new CountdownTimer.OnTimeoutListener() {
-            @Override
-            public void timeout() {
-                cancel();
-                alertTimeout();
-            }
-        });
+        mClockView.startCountdown(seconds, null);
 
         int from = mClockView.getLayoutParams().width;
         ValueAnimator animator = AnimUtil.ofInt(from, mClockViewWidthAndHeight)
@@ -147,6 +158,8 @@ public class MainActivityCountdownScene extends AbstractScene {
                 })
                 .build();
         animator.start();
+
+        DEBUG_CountdownService(mApplication.getCountdownMinute());
     }
 
     private void setTimeLabelMinute(int minute) {
@@ -163,6 +176,19 @@ public class MainActivityCountdownScene extends AbstractScene {
         mApplication.setCountdownRunning(false);
         mTextCountdownView.cancelCountdown();
         mTextCountdownView.setKeepScreenOn(false);
+        cancelCountdownService();
         new MainActivityConfigScene(getSceneRoot(), getContext()).go();
+    }
+
+
+    private void DEBUG_CountdownService(int minutes) {
+        Intent intent = new Intent(getContext(), CountdownService.class);
+        intent.putExtra(CountdownService.KEY_START_MSEC, System.currentTimeMillis());
+        intent.putExtra(CountdownService.KEY_COUNTDOWN_MINUTES, minutes);
+        getContext().bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    private void cancelCountdownService() {
+        getContext().unbindService(mServiceConnection);
     }
 }

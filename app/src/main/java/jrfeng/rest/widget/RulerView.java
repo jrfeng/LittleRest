@@ -151,6 +151,7 @@ public class RulerView extends View {
         setMeasuredDimension(measureWidth, measureHeight);
     }
 
+    @SuppressWarnings("UnnecessaryLocalVariable")
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
