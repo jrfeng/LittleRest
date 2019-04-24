@@ -8,4 +8,10 @@
 
     <string name="timeout">Timeout</string>
     <string name="ok">OK</string>
+
+    <string name="notification_content_title">Little Rest</string>
+    <plurals name="notification_content_text_template">
+        <item quantity="one">1 minute</item>
+        <item quantity="other">2 minutes</item>
+    </plurals>
 </resources>

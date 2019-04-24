@@ -9,4 +9,9 @@
     <string name="defaultText_Countdown_TimeLabel">共 0 分钟</string>
     <string name="timeout">时间到了</string>
     <string name="ok">知道了</string>
+
+    <string name="notification_content_title">休息一下</string>
+    <plurals name="notification_content_text_template">
+        <item quantity="other">共 0 分钟</item>
+    </plurals>
 </resources>

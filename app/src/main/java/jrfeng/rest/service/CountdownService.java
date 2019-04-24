@@ -12,6 +12,8 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -79,7 +81,7 @@ public class CountdownService extends Service {
 
         mNotificationBuilder = new NotificationCompat.Builder(this, ID_NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(getResources().getString(R.string.app_name))
+//                .setContentTitle(getResources().getString(R.string.app_name))
                 .setContentIntent(startMainActivity)
                 .setOnlyAlertOnce(true);
     }
@@ -116,7 +118,7 @@ public class CountdownService extends Service {
         }
 
         startCountdown(startAt, ms);
-        startForeground(minutes);
+        startForeground(startAt, minutes);
     }
 
     private void startCountdown(long startAt, int ms) {
@@ -131,15 +133,47 @@ public class CountdownService extends Service {
         stopForeground();
     }
 
-    private void startForeground(int minutes) {
+    private String getTimeRange(long startAt, int minutes) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(startAt);
+
+        StringBuilder timeRange = new StringBuilder();
+
+        timeRange.append(
+                String.format(
+                        Locale.getDefault(),
+                        "%02d:%02d",
+                        calendar.get(Calendar.HOUR_OF_DAY),
+                        calendar.get(Calendar.MINUTE)));
+
+        timeRange.append("~");
+
+        calendar.add(Calendar.MINUTE, minutes);
+
+        timeRange.append(
+                String.format(
+                        Locale.getDefault(),
+                        "%02d:%02d",
+                        calendar.get(Calendar.HOUR_OF_DAY),
+                        calendar.get(Calendar.MINUTE)));
+
+        return timeRange.toString();
+    }
+
+    private void startForeground(long startAt, int minutes) {
         final int seconds = minutes * 60;
 
-        String contentText = getResources().getString(R.string.defaultText_Countdown_TimeLabel);
-        contentText = contentText.replaceAll("\\d", String.valueOf(minutes))
-                .toLowerCase();
+        String timeRange = getTimeRange(startAt, minutes);
+
+        String contentTitle = getResources().getString(R.string.notification_content_title)
+                + " [" + timeRange + "]";
+
+        String contentText = getResources().getQuantityString(R.plurals.notification_content_text_template, minutes);
+        contentText = contentText.replaceAll("\\d", String.valueOf(minutes)).toLowerCase();
 
         Notification notification = mNotificationBuilder
                 .setProgress(seconds, 0, false)
+                .setContentTitle(contentTitle)
                 .setContentText(contentText)
                 .build();
 
