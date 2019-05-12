@@ -1,8 +1,10 @@
 package jrfeng.rest.scene;
 
 import android.animation.ValueAnimator;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Typeface;
 import android.os.PowerManager;
 import android.view.View;
@@ -18,7 +20,7 @@ import androidx.transition.Transition;
 import jrfeng.anim.AnimUtil;
 import jrfeng.rest.AppApplication;
 import jrfeng.rest.R;
-import jrfeng.rest.activity.TimeoutActivity;
+import jrfeng.rest.activity.MainActivity;
 import jrfeng.rest.service.CountdownService;
 import jrfeng.rest.widget.ClockView;
 import jrfeng.rest.widget.TextCountdownView;
@@ -38,8 +40,12 @@ public class MainActivityCountdownScene extends AbstractScene {
 
     private Intent mCountdownServiceIntent;
 
+    private Context mContext;
+    private BroadcastReceiver mScreenOffReceiver;
+
     public MainActivityCountdownScene(@NonNull ViewGroup sceneRoot, @NonNull Context context) {
         super(sceneRoot, context);
+        mContext = context;
 
         mApplication = AppApplication.getInstance();
         mNotoSansThin = mApplication.getTypeface();
@@ -47,6 +53,7 @@ public class MainActivityCountdownScene extends AbstractScene {
         mClockViewWidthAndHeight = context.getResources().getDimensionPixelSize(R.dimen.sceneCountdownClockWidth);
 
         initWakeLock(context);
+        initScreenOffReceiver();
     }
 
     private void initWakeLock(Context context) {
@@ -56,6 +63,26 @@ public class MainActivityCountdownScene extends AbstractScene {
                     PowerManager.PARTIAL_WAKE_LOCK,
                     "jrfeng.rest.scene:CountdownScene");
         }
+    }
+
+    private void initScreenOffReceiver() {
+        mScreenOffReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())) {
+                    context.startActivity(new Intent(context, MainActivity.class));
+                }
+            }
+        };
+    }
+
+    private void registerScreenOffReceiver() {
+        mContext.registerReceiver(mScreenOffReceiver,
+                new IntentFilter(Intent.ACTION_SCREEN_OFF));
+    }
+
+    private void unregisterScreenOffReceiver() {
+        mContext.unregisterReceiver(mScreenOffReceiver);
     }
 
     private void acquireWakeLock(long ms) {
@@ -117,6 +144,7 @@ public class MainActivityCountdownScene extends AbstractScene {
     }
 
     private void startCountdown() {
+        registerScreenOffReceiver();
         mApplication.setCountdownRunning(true);
         int seconds = mApplication.getCountdownMinute() * 60;
         acquireWakeLock(seconds * 1000 + 60_000);
@@ -152,11 +180,8 @@ public class MainActivityCountdownScene extends AbstractScene {
         tvTimeLabel.setText(timeLabel.replaceFirst("[0-9]+", String.valueOf(minute)));
     }
 
-    private void alertTimeout() {
-        TimeoutActivity.start(getContext());
-    }
-
     private void cancel() {
+        unregisterScreenOffReceiver();
         releaseWakeLock();
         mApplication.setCountdownRunning(false);
         mTextCountdownView.cancelCountdown();
