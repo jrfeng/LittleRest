@@ -2,6 +2,7 @@ package jrfeng.rest.service;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -9,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -177,6 +179,7 @@ public class CountdownService extends Service {
                 .setContentText(contentText)
                 .build();
 
+        createNotificationChannel();
         startForeground(ID_FOREGROUND, notification);
 
         mTimer = new Timer(true);
@@ -193,6 +196,22 @@ public class CountdownService extends Service {
                 }
             }
         }, 0, 1000);
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "LittleRest";
+            String description = "count down";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+
+            // 创建一个 NotificationChannel 对象，并对其进行配置
+            NotificationChannel channel = new NotificationChannel(ID_NOTIFICATION_CHANNEL, name, importance);
+            channel.setDescription(description);
+
+            // 注册通知渠道。注册后，你无法再修改通知的重要性和通知的其他行为
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 
     private void stopForeground() {
